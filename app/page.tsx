@@ -1,14 +1,9 @@
 import { Suspense } from 'react';
-import { createClient } from '@supabase/supabase-js'
+import supabase from '@/lib/db';
 import {NewsArticle} from '@/components/NewsArticle'
 import { unstable_cache as cache } from 'next/cache';
 
 export const experimental_ppr = true;
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 const getCachedArticles = cache(
   async () => {
