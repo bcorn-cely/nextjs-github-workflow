@@ -9,10 +9,10 @@ const supabase = createClient(
 )
 
 async function dropArticlesTable() {
-  const { error } = await supabase.rpc('drop_articles_table')
+  const { error, ...props } = await supabase.rpc('drop_articles_table')
   
   if (error) {
-    console.error('Error dropping articles table:', error)
+    console.error('Error dropping articles table:', props)
     return false
   }
   
@@ -21,10 +21,10 @@ async function dropArticlesTable() {
 }
 
 async function createArticlesTable() {
-  const { error } = await supabase.rpc('create_articles_table')
+  const { error, ...props } = await supabase.rpc('create_articles_table')
   
   if (error) {
-    console.error('Error creating articles table:', error)
+    console.error('Error creating articles table:', props)
     return false
   }
   
@@ -46,20 +46,23 @@ async function seedDatabase() {
       title: faker.lorem.sentence(),
       content: faker.lorem.paragraphs(3),
       author: faker.person.fullName(),
-      img_url: faker.image.url(),
+      img_url: faker.image.urlPicsumPhotos(),
       created_at: faker.date.recent()
     })
   }
-
-  const { error } = await supabase
+  setTimeout(async () => {
+    const { error, ...props } = await supabase
     .from('articles')
     .insert(articles)
 
-  if (error) {
-    console.error('Error seeding database:', error)
-  } else {
-    console.log('Database seeded successfully')
-  }
+    if (error) {
+      console.log(error);
+      console.error('Error seeding database:', props)
+
+    } else {
+      console.log('Database seeded successfully')
+    }
+  }, 3000)
 }
 
 seedDatabase()
