@@ -12,7 +12,7 @@ export interface Article {
 
 export function NewsArticle({ article }: { article: Article }) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden card">
       <div className="relative w-full h-48">
         <Image
           className='object-cover'
