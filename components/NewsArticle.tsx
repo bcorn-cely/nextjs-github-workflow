@@ -12,7 +12,7 @@ export interface Article {
 
 export function NewsArticle({ article }: { article: Article }) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden card">
       <div className="relative w-full h-48">
         <Image
           className='object-cover'
@@ -23,7 +23,7 @@ export function NewsArticle({ article }: { article: Article }) {
         />
       </div>
       <CardHeader>
-        <CardTitle>{article.title}</CardTitle>
+        <CardTitle className='card-title'>{article.title}</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-600 mb-2">By {article.author}</p>

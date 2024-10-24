@@ -1,34 +1,55 @@
-name: E2E Tests
+name: Playwright Tests
 
 on:
   deployment_status:
 
 jobs:
-  e2e-tests:
+  test:
     if: github.event.deployment_status.state == 'success'
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
 
-      - name: Install dependencies
-        run: npm ci
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8 # or whatever version you're using
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Run Playwright tests
-        run: npx playwright test
-        env:
-          PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.target_url }}
+    - uses: actions/cache@v3
+      name: Setup pnpm cache
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
 
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+    - name: Install dependencies
+      run: pnpm install 
+
+    - name: Install Playwright Browsers
+      run: pnpm exec playwright install --with-deps
+
+    - name: Run Playwright tests
+      run: pnpm exec playwright test
+      env:
+        PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.target_url }}
+        # Add Vercel preview authentication token
+        VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET}}
+
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
