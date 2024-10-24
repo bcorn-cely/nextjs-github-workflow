@@ -12,7 +12,8 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'picsum.photos'
       }
-    ]
+    ],
+    minimumCacheTTL: 60 * 60 * 24 // 24 hours,
   },
   experimental: {
     ppr: 'incremental',
